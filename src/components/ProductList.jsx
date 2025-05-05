@@ -1,14 +1,25 @@
-import React from "react";
+// ProductList.jsx
+import React, { useState } from "react";
 import { Table, Button, Space, Typography } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { productsData } from "../data/products";
+import ModalForm from "./ModalForm";
 
 const { Title } = Typography;
 
 export default function ProductList() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleAdd = () => {
-    console.log("Add new product");
-    // Open add product modal/form here
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   const handleEdit = (record) => {
@@ -86,6 +97,7 @@ export default function ProductList() {
         rowKey="id"
         pagination={{ pageSize: 5 }}
       />
+      <ModalForm open={isModalOpen} onOk={handleOk} onCancel={handleCancel} />
     </div>
   );
 }
