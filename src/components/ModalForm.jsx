@@ -1,19 +1,31 @@
-import { Modal } from "antd";
+import { Modal, Form } from "antd";
 import React from "react";
 import AddProductForm from "./AddProductForm";
+import EditProductForm from "./EditProductForm";
 
-export default function ModalForm({ open, onCancel }) {
+export default function ModalForm({ open, onCancel, onOk, initialValues }) {
+  const [form] = Form.useForm();
+
+  const handleSubmit = () => {
+    form.validateFields().then((values) => {
+      onOk(values);
+      form.resetFields();
+    });
+  };
+
   return (
     <Modal
-      title="Add Product"
+      title={initialValues ? "Edit Product" : "Add Product"}
       open={open}
-      onCancel={() => {
-        onCancel();
-        form.resetFields();
-      }}
-      onOk={() => form.submit()}
+      onOk={handleSubmit}
+      onCancel={onCancel}
+      okText={initialValues ? "Update" : "Add"}
     >
-      <AddProductForm />
+      {initialValues ? (
+        <EditProductForm form={form} initialValues={initialValues} />
+      ) : (
+        <AddProductForm onOk={handleSubmit} />
+      )}
     </Modal>
   );
 }

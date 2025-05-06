@@ -1,6 +1,5 @@
-// ProductList.jsx
 import React, { useState } from "react";
-import { Table, Button, Space, Typography } from "antd";
+import { Table, Button, Space, Typography, Form } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { productsData } from "../data/products";
 import ModalForm from "./ModalForm";
@@ -8,26 +7,51 @@ import ModalForm from "./ModalForm";
 const { Title } = Typography;
 
 export default function ProductList() {
+  const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [products, setProducts] = useState(productsData);
 
   const handleAdd = () => {
+    setEditingProduct(null);
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
+ const handleOk = (values) => {
+   if (editingProduct) {
+     const updatedProducts = products.map((product) =>
+       product.id === editingProduct.id ? { ...product, ...values } : product
+     );
+     setProducts(updatedProducts); // Update the state with new product list
+   } else {
+     const newProduct = {
+       ...values,
+       id: Date.now(), // Generate a unique ID for new products
+     };
+     setProducts([...products, newProduct]); // Add new product to state
+     console.log("New Product:", newProduct);
+   }
+
+   setIsModalOpen(false); // Close modal
+   setEditingProduct(null); // Reset editing product
+ };
+
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    setEditingProduct(null);
+    form.resetFields();
   };
 
   const handleEdit = (record) => {
-    console.log("Edit product:", record);
+    setEditingProduct(record);
+    setIsModalOpen(true);
   };
 
   const handleDelete = (record) => {
-    console.log("Delete product:", record);
+    const filtered = products.filter((product) => product.id !== record.id);
+    setProducts(filtered);
+    console.log("Deleted:", record);
   };
 
   const columns = [
@@ -40,7 +64,7 @@ export default function ProductList() {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (price) => `$${price.toFixed(2)}`,
+      render: (price) => (price ? `$${price.toFixed(2)}` : "$0.00"),
     },
     {
       title: "Category",
@@ -92,12 +116,18 @@ export default function ProductList() {
         </Button>
       </div>
       <Table
-        dataSource={productsData}
+        dataSource={products}
         columns={columns}
         rowKey="id"
         pagination={{ pageSize: 5 }}
       />
-      <ModalForm open={isModalOpen} onOk={handleOk} onCancel={handleCancel} />
+      <ModalForm
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        initialValues={editingProduct}
+        form={form}
+      />
     </div>
   );
 }
