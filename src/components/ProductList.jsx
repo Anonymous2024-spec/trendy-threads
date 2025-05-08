@@ -17,25 +17,24 @@ export default function ProductList() {
     setIsModalOpen(true);
   };
 
- const handleOk = (values) => {
-   if (editingProduct) {
-     const updatedProducts = products.map((product) =>
-       product.id === editingProduct.id ? { ...product, ...values } : product
-     );
-     setProducts(updatedProducts); // Update the state with new product list
-   } else {
-     const newProduct = {
-       ...values,
-       id: Date.now(), // Generate a unique ID for new products
-     };
-     setProducts([...products, newProduct]); // Add new product to state
-     console.log("New Product:", newProduct);
-   }
+  const handleOk = (values) => {
+    if (editingProduct) {
+      const updatedProducts = products.map((product) =>
+        product.id === editingProduct.id ? { ...product, ...values } : product
+      );
+      setProducts(updatedProducts); // Update the state with new product list
+    } else {
+      const newProduct = {
+        ...values,
+        id: Date.now(), // Generate a unique ID for new products
+      };
+      setProducts([...products, newProduct]); // Add new product to state
+      console.log("New Product:", newProduct);
+    }
 
-   setIsModalOpen(false); // Close modal
-   setEditingProduct(null); // Reset editing product
- };
-
+    setIsModalOpen(false); // Close modal
+    setEditingProduct(null); // Reset editing product
+  };
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -127,6 +126,7 @@ export default function ProductList() {
         onCancel={handleCancel}
         initialValues={editingProduct}
         form={form}
+        isEditing={!!editingProduct} // 👈 Add this line
       />
     </div>
   );

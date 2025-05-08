@@ -7,7 +7,12 @@ const layout = {
   wrapperCol: { span: 18 },
 };
 
-export default function AddProductForm({ onOk, onSubmit }) {
+export default function AddProductForm({
+  onOk,
+  onSubmit,
+  initialValues,
+  isEditing,
+}) {
   const [form] = Form.useForm();
   const onCategoryChange = (value) => {
     switch (value) {
@@ -45,6 +50,7 @@ export default function AddProductForm({ onOk, onSubmit }) {
       form={form}
       name="add-product-form"
       onFinish={onFinish}
+      initialValues={initialValues} // ✅ add this line
       style={{ maxWidth: 600 }}
     >
       <Form.Item
@@ -82,7 +88,6 @@ export default function AddProductForm({ onOk, onSubmit }) {
       >
         <InputNumber min={0} style={{ width: "100%" }} />
       </Form.Item>
-
       <Form.Item
         name="image"
         label="Image"
@@ -96,6 +101,11 @@ export default function AddProductForm({ onOk, onSubmit }) {
         <Upload beforeUpload={() => false} maxCount={1} accept="image/*">
           <Button icon={<UploadOutlined />}>Click to Upload</Button>
         </Upload>
+      </Form.Item>
+      <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
+        <Button type="primary" htmlType="submit">
+          Submit
+        </Button>
       </Form.Item>
     </Form>
   );
