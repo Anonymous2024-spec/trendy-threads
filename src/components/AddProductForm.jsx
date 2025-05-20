@@ -1,5 +1,6 @@
 import { Form, Input, Select, InputNumber, Upload, Button } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+
 const { Option } = Select;
 
 const layout = {
@@ -11,46 +12,40 @@ export default function AddProductForm({
   onOk,
   onSubmit,
   initialValues,
-  isEditing,
+  form, // ✅ use passed form
+  isEditing = false,
 }) {
-  const [form] = Form.useForm();
-  const onCategoryChange = (value) => {
-    switch (value) {
-      case "carpet":
-        form.setFieldsValue({ note: "These are carpets!" });
-        break;
-      case "shoes":
-        form.setFieldsValue({ note: "These are shoes!" });
-        break;
-      case "jeans":
-        form.setFieldsValue({ note: "These are jeans!" });
-        break;
-      default:
-    }
-  };
-
   const onFinish = (values) => {
     const formData = {
       ...values,
-      image: values.image ? URL.createObjectURL(values.image) : null,
+      image:
+        values.image instanceof File
+          ? URL.createObjectURL(values.image)
+          : initialValues?.image,
     };
 
-    // <-- log it!
     console.log("📝 Form submitted:", formData);
 
     if (typeof onSubmit === "function") {
       onSubmit(formData);
     }
+
     onOk();
     form.resetFields();
   };
+
+  const normFile = (e) => {
+    if (Array.isArray(e)) return e;
+    return e?.fileList?.[0]?.originFileObj;
+  };
+
   return (
     <Form
       {...layout}
       form={form}
       name="add-product-form"
       onFinish={onFinish}
-      initialValues={initialValues} // ✅ add this line
+      initialValues={initialValues}
       style={{ maxWidth: 600 }}
     >
       <Form.Item
@@ -74,7 +69,7 @@ export default function AddProductForm({
         label="Category"
         rules={[{ required: true, message: "Select a category" }]}
       >
-        <Select onChange={onCategoryChange} allowClear>
+        <Select allowClear placeholder="Select category">
           <Option value="carpet">Carpet</Option>
           <Option value="shoes">Shoes</Option>
           <Option value="jeans">Jeans</Option>
@@ -88,23 +83,27 @@ export default function AddProductForm({
       >
         <InputNumber min={0} style={{ width: "100%" }} />
       </Form.Item>
+
       <Form.Item
         name="image"
         label="Image"
         valuePropName="file"
-        getValueFromEvent={(e) => {
-          if (Array.isArray(e)) return e;
-          return e?.fileList?.[0]?.originFileObj;
-        }}
-        rules={[{ required: true, message: "Please upload an image!" }]}
+        getValueFromEvent={normFile}
+        rules={[
+          {
+            required: !isEditing,
+            message: "Please upload an image!",
+          },
+        ]}
       >
         <Upload beforeUpload={() => false} maxCount={1} accept="image/*">
           <Button icon={<UploadOutlined />}>Click to Upload</Button>
         </Upload>
       </Form.Item>
+
       <Form.Item wrapperCol={{ offset: 6, span: 18 }}>
         <Button type="primary" htmlType="submit">
-          Submit
+          {isEditing ? "Update Product" : "Add Product"}
         </Button>
       </Form.Item>
     </Form>

@@ -1,9 +1,9 @@
-import React from 'react'
+import CategoryList from '../components/CategoryList'
 
 export default function Categories() {
   return (
     <div>
-      Categories
+      <CategoryList/>
     </div>
   )
 }

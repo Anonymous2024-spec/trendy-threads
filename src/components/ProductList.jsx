@@ -94,7 +94,6 @@ export default function ProductList() {
             Edit
           </Button>
           <Button
-            type="primary"
             danger
             icon={<DeleteOutlined />}
             onClick={() => handleDelete(record)}
